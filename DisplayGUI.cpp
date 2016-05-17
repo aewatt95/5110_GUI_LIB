@@ -14,11 +14,15 @@ DisplayGUI::DisplayGUI()
 {
 	currentMenu->title = "Main";
 	currentSelection = 0;
+	//TODO: Implement begin() with additional Parameters
+	display->begin(false);
+	
 } //DisplayGUI
 
 // default destructor
 DisplayGUI::~DisplayGUI()
 {
+	
 } //~DisplayGUI
 
 void DisplayGUI::drawMenu()
@@ -54,11 +58,6 @@ void DisplayGUI::drawSlider(byte numberOfItems, byte selectedItem)
 	
 }
 
-void DisplayGUI::drawSlider()
-{
-	
-}
-
 void DisplayGUI::drawCursor(byte selectedItem)
 {
 	byte printPosition = currentSelection % 3;
@@ -69,9 +68,12 @@ void DisplayGUI::drawStatusBar()
 	//drawIcon(battery)
 }
 
+
+
 void DisplayGUI::drawOutline(LINETYPE linetype)
 {
-	
+		for(int i = 0; i < 84; i = i + 2) 
+		display->writeBitmap(LINE[linetype], i, 9, 2 , 2);
 }
 
 void DisplayGUI::drawIcon(byte icon[])

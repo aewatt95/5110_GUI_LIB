@@ -8,8 +8,6 @@
 #include "Arduino.h"
 #include <string.h>
 
-class Menu;
-class Screen;
 
 class Screen{
 	public:
@@ -48,18 +46,20 @@ class Menu{
 	}
 	~Menu(){}
 	
-	void addSubMenu(char* name){
+	Menu* addSubMenu(char* name){
 		subMenuPtr[numberOfSubMenus].title = name;
 		subMenuPtr[numberOfSubMenus].parent = this;
 		
 		numberOfSubMenus++;
 		subMenuPtr = (Menu *) realloc(subMenuPtr, numberOfSubMenus + 1);
+		return &subMenuPtr[numberOfSubMenus - 1];
 		
 	}
-	void addScreen(char * name){
+	Screen* addScreen(char * name){
 		screenPtr[numberOfScreens].title = name;
 		numberOfScreens++;
 		screenPtr = (Screen *) realloc(screenPtr, numberOfScreens + 1);
+		return &screenPtr[numberOfScreens - 1];
 	}
 	byte getOverallItemNumber(){
 		return (numberOfScreens + numberOfSubMenus);

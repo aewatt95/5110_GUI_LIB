@@ -6,11 +6,22 @@
  */ 
 #include "DisplayGUI.h"
 #include <SPI/SPI.h>
+#include "PCD8544_SPI.h"
+
+
+// Use Pins 
+// PIN_DC    D8
+// PIN_RESET D9
+// PIN_SCE   D10
+// PIN_SDIN  D11
+// PIN_SCLK  D13
+// for now
 
 void setup()
 {
 	DisplayGUI gui;
 	gui.addMenu(NULL, "Hello");
+	
 }
 
 void loop()

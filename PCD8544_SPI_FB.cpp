@@ -48,8 +48,8 @@ size_t PCD8544_SPI_FB::write(uint8_t data)
 	}
 	else{
 		for(int i = 0; i < 5; i++){
-			this->m_Buffer[this->m_Position] = (ASCII[data - 0x20][i] << (y_Position % 8));
-			this->m_Buffer[this->m_Position + 84] = (ASCII[data - 0x20][i] >> (8 - (y_Position % 8)));
+			this->m_Buffer[this->m_Position + i] |= (ASCII[data - 0x20][i] << (y_Position % 8));
+			this->m_Buffer[this->m_Position + 84 + i] |= (ASCII[data - 0x20][i] >> (8 - (y_Position % 8)));
 		}
 	}
 	this->m_Buffer[this->m_Position+5] = 0x00;
@@ -79,18 +79,19 @@ uint8_t PCD8544_SPI_FB::gotoXY(uint8_t x, uint8_t y)
 	return PCD8544_SUCCESS;
 }
 
-//TODO: Change to fit 84*48 -> dont use this yet
+//Andre: Change to fit 84*48 coordinates
+//TODO: Don't use *pos two times if it's not necesary
+//UNTESTED
 uint8_t PCD8544_SPI_FB::writeBitmap(const uint8_t *bitmap, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {		
 	if (this->gotoXY(x, y) == PCD8544_ERROR) return PCD8544_ERROR;
-
-	uint8_t *pos = this->m_Buffer + this->m_Position;
+	
     const uint8_t *maxY = bitmap + height * width;	
 
-	for (const uint8_t *y = (uint8_t*) bitmap; y < maxY; y += width)
+	for (uint8_t i = 0; i < width; i++)
 	{
-		memcpy(pos, y, width);
-		pos += PCD8544_X_PIXELS;
+		this->m_Buffer[m_Position] |= *(bitmap + i) << (y_Position % 8);
+		this->m_Buffer[m_Position + PCD8544_X_PIXELS] |= *(bitmap + i) << (8- (y_Position % 8));
 	}
 	return PCD8544_SUCCESS;
 }

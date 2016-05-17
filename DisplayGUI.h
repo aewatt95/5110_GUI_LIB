@@ -11,7 +11,9 @@
 
 #include "Arduino.h"
 #include "MenuClasses.cpp"
+#include "PCD8544_SPI.h"
 
+const uint8_t LINE[][2] = {{1, 1}, {0b1, 0b0}, {0b10, 0b01}};
 
 class DisplayGUI
 {
@@ -25,9 +27,7 @@ private:
 	Menu* root;	
 	Menu* currentMenu;
 	byte currentSelection;
-	
-	
-		
+	PCD8544_SPI_FB *display;
 		
 //functions
 public:
