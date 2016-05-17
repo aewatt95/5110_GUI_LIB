@@ -14,7 +14,7 @@ class Screen;
 class Screen{
 	public:
 	char* title;
-	byte priority = 0;	
+	byte priority;	
 	
 	Screen(){}
 	~Screen(){}
@@ -29,15 +29,20 @@ class Screen{
 
 class Menu{
 	public:
-	char* title = "Main";
+	String title;
 	Menu *subMenuPtr;
 	Screen *screenPtr;
-	byte numberOfSubMenus = 0;
-	byte numberOfScreens = 0;
-	byte priority = 0;
-	Menu* parent = NULL;
+	byte numberOfSubMenus;
+	byte numberOfScreens;
+	byte priority;
+	Menu* parent;
 	
 	Menu(){
+		title = "Main";
+		numberOfSubMenus = 0;
+		numberOfScreens = 0;
+		priority = 0;
+		parent = NULL;
 		subMenuPtr = (Menu *) malloc(sizeof(Menu *));
 		screenPtr = (Screen *) malloc(sizeof(Screen *));
 	}

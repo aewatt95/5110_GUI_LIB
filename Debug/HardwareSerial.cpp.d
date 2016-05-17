@@ -1,14 +1,16 @@
-C:\Users\Andre\ Eberhard\AppData\Local\V.Micro\Arduino\Builds\5110_GUI_LIB\uno\HardwareSerial.cpp.o: \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.cpp \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\Arduino.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\binary.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\WCharacter.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\WString.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\Stream.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\Print.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\Printable.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\USBAPI.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\variants\standard/pins_arduino.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\HardwareSerial_private.h \
- C:\Program\ Files\ (x86)\Arduino\hardware\arduino\avr\cores\arduino\wiring_private.h
+ \
+ C:\Users\Andre\ Eberhard\AppData\Local\V.Micro\Arduino\Builds\5110_GUI_LIB\uno\HardwareSerial.cpp.o:  \
+ C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\HardwareSerial.cpp \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/Arduino.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/binary.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/WCharacter.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/WString.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/HardwareSerial.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/Stream.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/Print.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/Printable.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino/new.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\variants\standard/pins_arduino.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/wiring_private.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/Arduino.h \
+  C:\Users\Andre\ Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\/HardwareSerial.h

@@ -5,6 +5,7 @@
  * Author: Andre Eberhard
  */ 
 #include "DisplayGUI.h"
+#include <SPI/SPI.h>
 
 void setup()
 {

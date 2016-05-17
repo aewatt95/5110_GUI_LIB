@@ -7,6 +7,7 @@
 
 
 #include "DisplayGUI.h"
+#include "PCD8544_SPI.h"
 
 // default constructor
 DisplayGUI::DisplayGUI()
