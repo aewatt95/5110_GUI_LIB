@@ -14,6 +14,7 @@ DisplayGUI::DisplayGUI()
 {
 	currentMenu->title = "Main";
 	currentSelection = 0;
+	firstMenuPoint = 0;
 	//TODO: Implement begin() with additional Parameters
 	display->begin(false);
 	
@@ -27,7 +28,8 @@ DisplayGUI::~DisplayGUI()
 
 void DisplayGUI::drawMenu()
 {
-	
+	drawEntrys();
+	drawCursor();
 }
 
 void DisplayGUI::addScreen(Menu *parentMenu, char* screenTitle)
@@ -42,14 +44,24 @@ void DisplayGUI::addMenu(Menu *parentMenu, char* menuTitle)
 	parentMenu->subMenuPtr[parentMenu->numberOfSubMenus].priority = parentMenu->getOverallItemNumber();	
 }
 
+//UNTESTED
 void DisplayGUI::drawEntrys()
 {
-	for(int i = (currentSelection % 3); i < (currentSelection % 3) + 3; i++){
+	//get the first entry that is displayed on the screen
+	if(firstMenuPoint < currentSelection)
+		firstMenuPoint == currentSelection;
+	if(firstMenuPoint + 2 > currentSelection)
+		firstMenuPoint = currentSelection - 2;
 		
-		if(i == currentMenu->subMenuPtr[i].priority);
-			//print currentMenu->subMenuPtr[i].title; 
-		if(i == currentMenu->screenPtr[i].priority);
-			//print currentMenu->screenPtr[i].title;
+	//Print three entrys beginning with firstMenuPoint
+	for(int i = firstMenuPoint; i < firstMenuPoint + 2; i++){
+		for(int j = 0; j < currentMenu->getOverallItemNumber(); j++){
+			if(currentMenu->subMenuPtr[j].priority == i){
+				display->gotoXY(11, 13 + ((firstMenuPoint - i) * 8));
+				display->print(currentMenu->screenPtr[j].title);
+			}
+			//TODO: Add Screens here
+		}
 	}
 }
 
@@ -58,14 +70,16 @@ void DisplayGUI::drawSlider(byte numberOfItems, byte selectedItem)
 	
 }
 
-void DisplayGUI::drawCursor(byte selectedItem)
+//UNTESTED
+void DisplayGUI::drawCursor()
 {
-	byte printPosition = currentSelection % 3;
+	display->writeBitmap(CURSOR, 3, (11 + (currentSelection - firstMenuPoint) * 8), 5, 1);
 }
+
 
 void DisplayGUI::drawStatusBar()
 {
-	//drawIcon(battery)
+	
 }
 
 

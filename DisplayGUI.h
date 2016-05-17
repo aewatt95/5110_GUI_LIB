@@ -13,7 +13,9 @@
 #include "MenuClasses.cpp"
 #include "PCD8544_SPI.h"
 
+//TODO: Move all Bitmaps to external file and ban into PROGMEM >:)
 const uint8_t LINE[][2] = {{1, 1}, {0b1, 0b0}, {0b10, 0b01}};
+const uint8_t CURSOR[] = {0x0E, 0x0E, 0x0E, 0x1F, 0x0E, 0x04}; // Code for char cursor
 
 class DisplayGUI
 {
@@ -27,6 +29,10 @@ private:
 	Menu* root;	
 	Menu* currentMenu;
 	byte currentSelection;
+	
+	//Needed for scrolling through Menus
+	byte firstMenuPoint;
+	
 	PCD8544_SPI_FB *display;
 		
 //functions
@@ -39,7 +45,7 @@ public:
 	void drawMenu();
 		void drawEntrys();
 		void drawSlider(byte numberOfItems, byte selectedItem);
-		void drawCursor(byte selectedItem);
+		void drawCursor();
 	
 	void drawStatusBar();
 		void drawOutline(LINETYPE linetype);

@@ -87,11 +87,13 @@ uint8_t PCD8544_SPI_FB::writeBitmap(const uint8_t *bitmap, uint8_t x, uint8_t y,
 	if (this->gotoXY(x, y) == PCD8544_ERROR) return PCD8544_ERROR;
 	
     const uint8_t *maxY = bitmap + height * width;	
-
-	for (uint8_t i = 0; i < width; i++)
-	{
-		this->m_Buffer[m_Position] |= *(bitmap + i) << (y_Position % 8);
-		this->m_Buffer[m_Position + PCD8544_X_PIXELS] |= *(bitmap + i) << (8- (y_Position % 8));
+		
+	for(uint8_t j = 0; j < height; j++){
+		for (uint8_t i = 0; i < width; i++)
+		{
+			this->m_Buffer[m_Position + (PCD8544_X_PIXELS * j)] |= *(bitmap + i) << (y_Position % 8);
+			this->m_Buffer[m_Position + (PCD8544_X_PIXELS * (j + 1))] |= *(bitmap + i) << (8- (y_Position % 8));
+		}
 	}
 	return PCD8544_SUCCESS;
 }
