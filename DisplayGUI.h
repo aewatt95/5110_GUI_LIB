@@ -54,6 +54,8 @@ public:
 	//GUI Elements
 	void drawSwitchButton();
 	void drawSlider();
+	
+	void incommingInput();
 		
 protected:
 private:

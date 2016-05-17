@@ -15,6 +15,8 @@ DisplayGUI::DisplayGUI()
 	currentMenu->title = "Main";
 	currentSelection = 0;
 	firstMenuPoint = 0;
+	attachInterrupt(2, incomingInput, RISING);
+	
 	//TODO: Implement begin() with additional Parameters
 	display->begin(false);
 	
@@ -79,7 +81,8 @@ void DisplayGUI::drawCursor()
 
 void DisplayGUI::drawStatusBar()
 {
-	
+	drawOutline(DOUBLEDOTTED);
+	drawMenuTitle();	
 }
 
 
@@ -97,11 +100,17 @@ void DisplayGUI::drawIcon(byte icon[])
 
 void DisplayGUI::drawMenuTitle()
 {
-	
+	display->gotoXY(1, 1);
+	display->print(currentMenu->title);
 }
 
 void DisplayGUI::drawSwitchButton()
 {
+	
+}
+
+//TODO: Implement Inputs
+void DisplayGUI::incommingInput(){
 	
 }
 
