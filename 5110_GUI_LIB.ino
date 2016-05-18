@@ -17,10 +17,13 @@
 // PIN_SCLK  D13
 // for now
 
+DisplayGUI gui;
+
 void setup()
 {
-	DisplayGUI gui;
+	
 	gui.addMenu(NULL, "Hello");
+	gui.initInterupt();
 	
 }
 
@@ -29,4 +32,9 @@ void loop()
 
 	  /* add main program code here, this code starts again each time it ends */
 
+}
+
+//TODO: Please! Find another solution for this! It's just bad :(
+ISR (TIMER1_OVF_vect){
+	gui.handleInput();
 }

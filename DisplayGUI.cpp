@@ -8,6 +8,8 @@
 
 #include "DisplayGUI.h"
 #include "PCD8544_SPI.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
 
 // default constructor
 DisplayGUI::DisplayGUI()
@@ -15,10 +17,15 @@ DisplayGUI::DisplayGUI()
 	currentMenu->title = "Main";
 	currentSelection = 0;
 	firstMenuPoint = 0;
-	attachInterrupt(2, incomingInput, RISING);
+	
 	
 	//TODO: Implement begin() with additional Parameters
 	display->begin(false);
+	
+	//Initalise input varaibles
+	lastAValue = digitalRead(pinA);
+	lastBValue = digitalRead(pinB);
+	lastClickValue = digitalRead(pinClick);
 	
 } //DisplayGUI
 
@@ -109,8 +116,36 @@ void DisplayGUI::drawSwitchButton()
 	
 }
 
-//TODO: Implement Inputs
-void DisplayGUI::incommingInput(){
+void DisplayGUI::initInterupt(){
+	//Set Timer in normal Mode to overflow every 16 ms
+	TCCR0B |= (1 << CS02) | (1 << CS00);
+	//Activate interrupt
+	sei();
+	//Activate Interrupt on Overflow
+	TIMSK1 |= (1 << TOIE1);
+}
+
+//TODO: Implement Inputs for rotary encoder
+//Clockwise:	A: 0 0 1 1
+//				B: 1 0 0 1
+//
+//C.Clockwise:	A: 1 0 0 1
+//				B: 0 0 1 1
+//UNTESTED and probably wrong at some point
+void DisplayGUI::handleInput(){
+	if(lastAValue != digitalRead(pinA)){
+		if(lastAValue && digitalRead(pinB)) currentSelection++;
+		else currentSelection--;
+		lastAValue = digitalRead(pinA);
+	}
+	else if(lastBValue != digitalRead(pinB)){
+		if(lastBValue && digitalRead(pinA)) currentSelection--;
+		else currentSelection++;
+		lastBValue = digitalRead(pinB);
+	}
 	
+	if(lastClickValue != digitalRead(pinClick)){
+		if(!lastClickValue); //TODO: do something
+		}
 }
 

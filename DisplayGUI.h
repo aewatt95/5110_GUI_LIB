@@ -16,6 +16,10 @@
 //TODO: Move all Bitmaps to external file and ban into PROGMEM >:)
 const uint8_t LINE[][2] = {{1, 1}, {0b1, 0b0}, {0b10, 0b01}};
 const uint8_t CURSOR[] = {0x0E, 0x0E, 0x0E, 0x1F, 0x0E, 0x04}; // Code for char cursor
+	
+const uint8_t pinA = 3;
+const uint8_t pinB = 4;
+const uint8_t pinClick = 5;
 
 class DisplayGUI
 {
@@ -34,6 +38,11 @@ private:
 	byte firstMenuPoint;
 	
 	PCD8544_SPI_FB *display;
+	
+	//Variables for Input
+	bool lastAValue;
+	bool lastBValue;
+	bool lastClickValue;
 		
 //functions
 public:
@@ -41,6 +50,7 @@ public:
 	~DisplayGUI();
 	void addScreen(Menu *parentMenu, char* screenTitle);
 	void addMenu(Menu *parentMenu, char* menuTitle);
+	void initInterupt();
 	
 	void drawMenu();
 		void drawEntrys();
@@ -55,7 +65,7 @@ public:
 	void drawSwitchButton();
 	void drawSlider();
 	
-	void incommingInput();
+	void handleInput();
 		
 protected:
 private:
