@@ -134,14 +134,27 @@ void DisplayGUI::initInterupt(){
 //UNTESTED and probably wrong at some point
 void DisplayGUI::handleInput(){
 	if(lastAValue != digitalRead(pinA)){
-		if(lastAValue && digitalRead(pinB)) currentSelection++;
-		else currentSelection--;
+		if(lastAValue){
+				if(lastBValue) currentSelection++;
+				else currentSelection--;
+			}
+		else{
+			if(lastBValue) currentSelection--;
+			else currentSelection ++;	
+		}
 		lastAValue = digitalRead(pinA);
 	}
+	
 	else if(lastBValue != digitalRead(pinB)){
-		if(lastBValue && digitalRead(pinA)) currentSelection--;
-		else currentSelection++;
-		lastBValue = digitalRead(pinB);
+		if(lastBValue){
+			if(lastAValue) currentSelection--;
+			else currentSelection++;
+		}
+		else{
+			if(lastAValue) currentSelection++;
+			else currentSelection --;
+		}
+		lastAValue = digitalRead(pinA);
 	}
 	
 	if(lastClickValue != digitalRead(pinClick)){
