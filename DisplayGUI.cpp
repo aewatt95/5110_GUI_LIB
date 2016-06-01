@@ -74,9 +74,17 @@ void DisplayGUI::drawEntrys()
 	}
 }
 
+
+//UNTESTED
+const byte slider[] = {0b10101010, 0b01010101};
 void DisplayGUI::drawSlider(byte numberOfItems, byte selectedItem)
 {
-	
+	byte maxHeight = 32;
+	byte actualHeight = maxHeight / numberOfItems;
+	for(int i = 0; i < maxHeight / 8; i++){
+		display->writeBitmap(slider, 80, 12 + i, 2, 8);
+	}	
+	display->writeRect(80, 12, 2, actualHeight, true);
 }
 
 //UNTESTED
@@ -93,16 +101,22 @@ void DisplayGUI::drawStatusBar()
 }
 
 
-
+//UNTESTED
 void DisplayGUI::drawOutline(LINETYPE linetype)
 {
 		for(int i = 0; i < 84; i = i + 2) 
 		display->writeBitmap(LINE[linetype], i, 9, 2 , 2);
 }
 
+//Draw Icon in the Status Bar
+byte lastIconXValue = 0; 
+
+//TODO: Add priority support
+//UNTESTED
 void DisplayGUI::drawIcon(byte icon[])
 {
-	
+		display->writeBitmap(icon,( 2 + sizeof(icon) / 8), 2, sizeof(icon) / 8, 5);
+		lastIconXValue = sizeof(icon) / 8;
 }
 
 void DisplayGUI::drawMenuTitle()
@@ -111,21 +125,12 @@ void DisplayGUI::drawMenuTitle()
 	display->print(currentMenu->title);
 }
 
-void DisplayGUI::drawSwitchButton()
-{
-	
-}
 
+//TODO: Reimplement Inputs for rotary encoder with ACTUAL REAL INTERRUPTS cause it will not work with timerInterrupts
+//UNUSED4
 void DisplayGUI::initInterupt(){
-	//Set Timer in normal Mode to overflow every 16 ms
-	TCCR0B |= (1 << CS02) | (1 << CS00);
-	//Activate interrupt
-	sei();
-	//Activate Interrupt on Overflow
-	TIMSK1 |= (1 << TOIE1);
 }
 
-//TODO: Implement Inputs for rotary encoder
 //Clockwise:	A: 0 0 1 1
 //				B: 1 0 0 1
 //
@@ -161,4 +166,3 @@ void DisplayGUI::handleInput(){
 		if(!lastClickValue); //TODO: do something
 		}
 }
-

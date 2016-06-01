@@ -23,8 +23,8 @@ void setup()
 {
 	
 	gui.addMenu(NULL, "Hello");
-	gui.initInterupt();
-	
+	attachInterrupt(0, whyCantIFindAnotherSolution(), CHANGE);
+	attachInterrupt(1, whyCantIFindAnotherSolution(), CHANGE);
 }
 
 void loop()
@@ -35,6 +35,6 @@ void loop()
 }
 
 //TODO: Please! Find another solution for this! It's just bad :(
-ISR (TIMER1_OVF_vect){
-	gui.handleInput();
+´void whyCantIFindAnotherSolution (){
+	gui.handleInput();j
 }

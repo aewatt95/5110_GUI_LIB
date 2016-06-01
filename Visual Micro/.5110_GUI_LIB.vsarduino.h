@@ -18,6 +18,7 @@ extern "C" void __cxa_pure_virtual() {;}
 
 //
 //
+void whyCantIFindAnotherSolution ();
 
 #include "C:\Users\Andre Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\variants\standard\pins_arduino.h" 
 #include "C:\Users\Andre Eberhard\Desktop\Geruempelschublade\Programme\arduino-1.0.6\hardware\arduino\cores\arduino\arduino.h"
