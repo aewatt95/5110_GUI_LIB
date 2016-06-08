@@ -14,13 +14,14 @@
 // default constructor
 DisplayGUI::DisplayGUI()
 {
-	currentMenu->title = "Main";
+	//root = new Menu();
+	//currentMenu = root;
 	currentSelection = 0;
 	firstMenuPoint = 0;
+
+	display = new PCD8544_SPI_FB();
+	display->begin(false, 0xBB, 0x04, 0x14);
 	
-	
-	//TODO: Implement begin() with additional Parameters
-	display->begin(false);
 	
 	//Initalise input varaibles
 	lastAValue = digitalRead(pinA);
@@ -33,12 +34,23 @@ DisplayGUI::DisplayGUI()
 DisplayGUI::~DisplayGUI()
 {
 	
+	
 } //~DisplayGUI
 
 void DisplayGUI::drawMenu()
 {
-	drawEntrys();
-	drawCursor();
+	display->clear();
+	if(root == NULL){
+		display->gotoXY(0, 0);
+		display->print("Error! ROOT UNDEFINED");
+	}
+	else{
+		drawStatusBar();
+		drawSlider(currentMenu->getOverallItemNumber(), currentSelection);
+		drawEntrys();
+		drawCursor();
+	}
+	display->renderAll();
 }
 
 void DisplayGUI::addScreen(Menu *parentMenu, char* screenTitle)
@@ -50,62 +62,63 @@ void DisplayGUI::addMenu(Menu *parentMenu, char* menuTitle)
 {
 	if(parentMenu == NULL) parentMenu = root;
 	parentMenu->addSubMenu(menuTitle);
-	parentMenu->subMenuPtr[parentMenu->numberOfSubMenus].priority = parentMenu->getOverallItemNumber();	
+	parentMenu->subMenuPtr[parentMenu->getOverallItemNumber()]->priority = 4;	
+}
+
+void DisplayGUI::setRootMenu(Menu* rootMenu){
+	this->root = rootMenu;
+	this->currentMenu = this->root;
 }
 
 //UNTESTED
 void DisplayGUI::drawEntrys()
 {
-	//get the first entry that is displayed on the screen
-	if(firstMenuPoint < currentSelection)
-		firstMenuPoint == currentSelection;
-	if(firstMenuPoint + 2 > currentSelection)
+	if(currentSelection >= currentMenu->numberOfSubMenus - 1)
 		firstMenuPoint = currentSelection - 2;
-		
-	//Print three entrys beginning with firstMenuPoint
-	for(int i = firstMenuPoint; i < firstMenuPoint + 2; i++){
-		for(int j = 0; j < currentMenu->getOverallItemNumber(); j++){
-			if(currentMenu->subMenuPtr[j].priority == i){
-				display->gotoXY(11, 13 + ((firstMenuPoint - i) * 8));
-				display->print(currentMenu->screenPtr[j].title);
-			}
-			//TODO: Add Screens here
-		}
+	else if(currentSelection > 1) 
+		firstMenuPoint = currentSelection - 1;
+	else 
+		firstMenuPoint = 0;
+	
+	for(byte i = 0; i < 3; i++){
+				display->gotoXY(11, (17 + (8*i)));
+				if(currentMenu->subMenuPtr[i + firstMenuPoint] != NULL)
+					display->print(currentMenu->subMenuPtr[i + firstMenuPoint]->title);
 	}
+	
 }
 
 
-//UNTESTED
 const byte slider[] = {0b10101010, 0b01010101};
 void DisplayGUI::drawSlider(byte numberOfItems, byte selectedItem)
 {
 	byte maxHeight = 32;
-	byte actualHeight = maxHeight / numberOfItems;
-	for(int i = 0; i < maxHeight / 8; i++){
-		display->writeBitmap(slider, 80, 12 + i, 2, 8);
+	float actualHeight = (float)maxHeight / (float)numberOfItems;
+	for(int i = 0; i < maxHeight; i = i + 8){
+		display->writeBitmap(slider, 80, 12 + i, 2, 7);
 	}	
-	display->writeRect(80, 12, 2, actualHeight, true);
+	display->writeRect(80, 12 + (actualHeight * currentSelection), 2, (byte)actualHeight, true);
 }
 
 //UNTESTED
 void DisplayGUI::drawCursor()
 {
-	display->writeBitmap(CURSOR, 3, (11 + (currentSelection - firstMenuPoint) * 8), 5, 1);
+		display->writeBitmap(CURSOR, 3, (17 + (currentSelection - firstMenuPoint) * 8), 6, 5);
 }
 
 
 void DisplayGUI::drawStatusBar()
 {
-	drawOutline(DOUBLEDOTTED);
-	drawMenuTitle();	
+	drawOutline(DOTTED);
+	drawMenuTitle();		
 }
 
 
-//UNTESTED
+
 void DisplayGUI::drawOutline(LINETYPE linetype)
 {
-		for(int i = 0; i < 84; i = i + 2) 
-		display->writeBitmap(LINE[linetype], i, 9, 2 , 2);
+	for(int i = 0; i < PCD8544_X_PIXELS - 10; i = i + 2)
+		display->writeBitmap((LINE[linetype]), i, 8, 2 , 2);
 }
 
 //Draw Icon in the Status Bar
@@ -121,7 +134,7 @@ void DisplayGUI::drawIcon(byte icon[])
 
 void DisplayGUI::drawMenuTitle()
 {
-	display->gotoXY(1, 1);
+	display->gotoXY(1,2);
 	display->print(currentMenu->title);
 }
 
@@ -129,6 +142,7 @@ void DisplayGUI::drawMenuTitle()
 //TODO: Reimplement Inputs for rotary encoder with ACTUAL REAL INTERRUPTS cause it will not work with timerInterrupts
 //UNUSED4
 void DisplayGUI::initInterupt(){
+	
 }
 
 //Clockwise:	A: 0 0 1 1
@@ -138,31 +152,40 @@ void DisplayGUI::initInterupt(){
 //				B: 0 0 1 1
 //UNTESTED and probably wrong at some point
 void DisplayGUI::handleInput(){
-	if(lastAValue != digitalRead(pinA)){
-		if(lastAValue){
-				if(lastBValue) currentSelection++;
-				else currentSelection--;
-			}
-		else{
-			if(lastBValue) currentSelection--;
-			else currentSelection ++;	
-		}
-		lastAValue = digitalRead(pinA);
-	}
+	if(currentSelection >= 250) currentSelection = 0;
+	if(currentSelection >= currentMenu->numberOfSubMenus - 1)
+		currentSelection = currentMenu->numberOfSubMenus - 1;
 	
-	else if(lastBValue != digitalRead(pinB)){
-		if(lastBValue){
-			if(lastAValue) currentSelection--;
-			else currentSelection++;
-		}
-		else{
-			if(lastAValue) currentSelection++;
-			else currentSelection --;
-		}
-		lastAValue = digitalRead(pinA);
+	this->drawMenu();
+}
+
+
+volatile byte aFlag = 0; // let's us know when we're expecting a rising edge on pinA to signal that the encoder has arrived at a detent
+volatile byte bFlag = 0; // let's us know when we're expecting a rising edge on pinB to signal that the encoder has arrived at a detent (opposite direction to when aFlag is set)
+volatile byte reading = 0; //somewhere to store the direct values we read from our interrupt pins before checking to see if we have moved a whole detent
+
+
+
+void DisplayGUI::PinA(){
+	cli(); //stop interrupts happening before we read pin values
+	reading = PIND & 0xC; // read all eight pin values then strip away all but pinA and pinB's values
+	if(reading == B00001100 && aFlag) { //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
+		currentSelection --; //decrement the encoder's position count
+		bFlag = 0; //reset flags for the next turn
+		aFlag = 0; //reset flags for the next turn
 	}
-	
-	if(lastClickValue != digitalRead(pinClick)){
-		if(!lastClickValue); //TODO: do something
-		}
+	else if (reading == B00000100) bFlag = 1; //signal that we're expecting pinB to signal the transition to detent from free rotation
+	sei(); //restart interrupts
+}
+
+void DisplayGUI::PinB(){
+	cli(); //stop interrupts happening before we read pin values
+	reading = PIND & 0xC; //read all eight pin values then strip away all but pinA and pinB's values
+	if (reading == B00001100 && bFlag) { //check that we have both pins at detent (HIGH) and that we are expecting detent on this pin's rising edge
+		currentSelection ++; //increment the encoder's position count
+		bFlag = 0; //reset flags for the next turn
+		aFlag = 0; //reset flags for the next turn
+	}
+	else if (reading == B00001000) aFlag = 1; //signal that we're expecting pinA to signal the transition to detent from free rotation
+	sei(); //restart interrupts
 }

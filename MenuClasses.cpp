@@ -1,67 +1,38 @@
-/*
- * MenuClasses.c
- *
- * Created: 12.05.2016 16:05:51
- *  Author: Andre Eberhard
- */ 
+#include "MenuClasses.h"
 
-#include "Arduino.h"
-#include <string.h>
-
-
-class Screen{
-	public:
-	char* title;
-	byte priority;	
-	
-	Screen(){}
-	~Screen(){}
-	void addButton(){
-		
-	}
-	
-	void addText(){
-		
-	}
+Menu::Menu(){
+	title = "Main";
+	numberOfSubMenus = 0;
+	numberOfScreens = 0;
+	priority = 0;
+	parent = NULL;
+	subMenuPtr = (Menu **) malloc(sizeof(Menu **));
+	screenPtr = (Screen **) malloc(sizeof(Screen **));
 };
+Menu::~Menu(){};
 
-class Menu{
-	public:
-	String title;
-	Menu *subMenuPtr;
-	Screen *screenPtr;
-	byte numberOfSubMenus;
-	byte numberOfScreens;
-	byte priority;
-	Menu* parent;
+Menu* Menu::addSubMenu(char* name){
+	subMenuPtr[numberOfSubMenus] = new Menu();
+	subMenuPtr[numberOfSubMenus]->title = name;
+	subMenuPtr[numberOfSubMenus]->parent = this;
+	subMenuPtr[numberOfSubMenus]->priority = this->getOverallItemNumber();
 	
-	Menu(){
-		title = "Main";
-		numberOfSubMenus = 0;
-		numberOfScreens = 0;
-		priority = 0;
-		parent = NULL;
-		subMenuPtr = (Menu *) malloc(sizeof(Menu *));
-		screenPtr = (Screen *) malloc(sizeof(Screen *));
-	}
-	~Menu(){}
+	numberOfSubMenus++;
+	subMenuPtr = (Menu **) realloc(subMenuPtr, numberOfSubMenus * sizeof(**subMenuPtr));
+	return subMenuPtr[numberOfSubMenus - 1];
+};
 	
-	Menu* addSubMenu(char* name){
-		subMenuPtr[numberOfSubMenus].title = name;
-		subMenuPtr[numberOfSubMenus].parent = this;
-		
-		numberOfSubMenus++;
-		subMenuPtr = (Menu *) realloc(subMenuPtr, numberOfSubMenus + 1);
-		return &subMenuPtr[numberOfSubMenus - 1];
-		
-	}
-	Screen* addScreen(char * name){
-		screenPtr[numberOfScreens].title = name;
-		numberOfScreens++;
-		screenPtr = (Screen *) realloc(screenPtr, numberOfScreens + 1);
-		return &screenPtr[numberOfScreens - 1];
-	}
-	byte getOverallItemNumber(){
-		return (numberOfScreens + numberOfSubMenus);
-	}
+
+
+Screen* Menu::addScreen(char * name){
+	screenPtr[numberOfScreens] = new Screen();
+	screenPtr[numberOfScreens]->title = name;
+	numberOfScreens++;
+	screenPtr = (Screen **) realloc(screenPtr, numberOfScreens * sizeof(**screenPtr));
+	return screenPtr[numberOfScreens - 1];
+}
+
+
+byte Menu::getOverallItemNumber(){
+	return (numberOfScreens + numberOfSubMenus);
 };

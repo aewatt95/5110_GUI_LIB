@@ -16,6 +16,7 @@ void PCD8544_SPI_FB::begin(bool invert, uint8_t vop, uint8_t tempCoef, uint8_t b
 	PCD8544_PORT |= (PIN_DC | PIN_RESET | PIN_CE);
 	PCD8544_DDR |= (PIN_DC | PIN_RESET | PIN_CE);
 	SPI.begin();
+	SPI.setClockDivider(SPI_CLOCK_DIV2);
 	
 	// LCD init section:
 	
@@ -33,30 +34,32 @@ void PCD8544_SPI_FB::begin(bool invert, uint8_t vop, uint8_t tempCoef, uint8_t b
 	this->writeLcd(PCD8544_COMMAND, invertSetting); //Set display control, normal mode. 0x0D for inverse
 
 	this->clear();
+	
+	this->x_Position = 0;
+	this->y_Position = 0;
 }
 
 //Andre: Changed to write at x, y Position in Pixels
-//UNTESTED
+//TESTED
 size_t PCD8544_SPI_FB::write(uint8_t data)
 {
 	// Non-ASCII characters are not supported.
 	if (data < 0x20 || data > 0x7F) return 0;
-	
-	if (this->m_Position + 5 >= BUF_LEN) this->m_Position -= (BUF_LEN - 6);
-	if((y_Position % 8) == 0){
-		memcpy_P(this->m_Buffer + this->m_Position, ASCII[data - 0x20], 5);
+		for(byte i = 0; i < 5; i++){
+			*(this->m_Buffer + this->m_Position + i) |= pgm_read_byte(&(ASCII[data - 0x20][i])) << (y_Position % 8);
+			*(this->m_Buffer + this->m_Position + i + PCD8544_X_PIXELS) |= pgm_read_byte(&(ASCII[data - 0x20][i])) >> (8 - (y_Position % 8));
 	}
-	else{
-		for(int i = 0; i < 5; i++){
-			this->m_Buffer[this->m_Position + i] |= (ASCII[data - 0x20][i] << (y_Position % 8));
-			this->m_Buffer[this->m_Position + 84 + i] |= (ASCII[data - 0x20][i] >> (8 - (y_Position % 8)));
-		}
+	this->x_Position += 6;
+	if(x_Position + 4 > PCD8544_X_PIXELS){
+		 y_Position += 6;
+		 x_Position = 0;
 	}
-	this->m_Buffer[this->m_Position+5] = 0x00;
-	this->m_Position += 6;
-	if (this->m_Position >= BUF_LEN) this->m_Position -= BUF_LEN;
-	//this->m_Position %= BUF_LEN;
-	return 1;
+	calcmPosition();
+	return 0;
+}
+
+void PCD8544_SPI_FB::calcmPosition(){
+	m_Position =  x_Position + ((y_Position / 8) * PCD8544_X_PIXELS);
 }
 
 void PCD8544_SPI_FB::clear(bool render)
@@ -68,14 +71,15 @@ void PCD8544_SPI_FB::clear(bool render)
 }
 
 //Andre: Y is now in Pixels, not in Blocks.
-//UNTESTED
+//TESTED
 uint8_t PCD8544_SPI_FB::gotoXY(uint8_t x, uint8_t y) 
 {	
 	if (x >= PCD8544_X_PIXELS || y >= PCD8544_Y_PIXELS) return PCD8544_ERROR;
 	this->writeLcd(PCD8544_COMMAND, 0x80 | x);  // Column.
 	this->writeLcd(PCD8544_COMMAND, 0x40 | (y/8));  // Row.
-	this->m_Position = (PCD8544_X_PIXELS * (y/8)) + x;
 	this->y_Position = y;
+	this->x_Position = x;
+	this->calcmPosition();
 	return PCD8544_SUCCESS;
 }
 
@@ -85,16 +89,20 @@ uint8_t PCD8544_SPI_FB::gotoXY(uint8_t x, uint8_t y)
 uint8_t PCD8544_SPI_FB::writeBitmap(const uint8_t *bitmap, uint8_t x, uint8_t y, uint8_t width, uint8_t height)
 {		
 	if (this->gotoXY(x, y) == PCD8544_ERROR) return PCD8544_ERROR;
-	
-    const uint8_t *maxY = bitmap + height * width;	
 		
-	for(uint8_t j = 0; j < height; j++){
+	for(uint8_t j = 0; j <= height/8; j++){
 		for (uint8_t i = 0; i < width; i++)
 		{
-			this->m_Buffer[m_Position + (PCD8544_X_PIXELS * j)] |= *(bitmap + i) << (y_Position % 8);
-			this->m_Buffer[m_Position + (PCD8544_X_PIXELS * (j + 1))] |= *(bitmap + i) << (8- (y_Position % 8));
+			//*(m_Buffer + m_Position + (PCD8544_X_PIXELS * j)) |= 
+			this->m_Buffer[m_Position] |= *(bitmap + (j* width) + i) << (y_Position % 8);
+			this->m_Buffer[m_Position + PCD8544_X_PIXELS] |=  *(bitmap + (j* width) + i) >> (8- (y_Position % 8));
+			x_Position++;
+			calcmPosition();
 		}
+		y_Position++;
+		calcmPosition();
 	}
+	
 	return PCD8544_SUCCESS;
 }
 
